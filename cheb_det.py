@@ -7,8 +7,9 @@ import numpy as np
 from numpy.typing import NDArray
 import random
 
+
 def Rademacher_vec(len):
-    return 2.0 * np.random.randint(2, size=(len,1)) - 1.0
+    return 2.0 * np.random.randint(2, size=(len, 1)) - 1.0
 
 
 def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
@@ -74,13 +75,13 @@ def logdet(matrix: csr_array, n_sample: int, n_degree: int, delta: float) -> flo
         u = c[0] * v
         if n_degree > 1:
             w0 = v
-            w1 = A@v
+            w1 = A @ v
             u = u + c[1] * w1
             for j in range(2, n_degree + 1):
-                w2 = 2.0 * A@w1 - w0
+                w2 = 2.0 * A @ w1 - w0
                 u = u + c[j] * w2
                 w0 = w1
                 w1 = w2
-        Gamma = Gamma + v.T@u / n_sample
+        Gamma = Gamma + v.T @ u / n_sample
 
-    return Gamma[0,0]
+    return Gamma[0, 0]
