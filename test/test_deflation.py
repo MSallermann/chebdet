@@ -28,7 +28,7 @@ def test():
 
     logdet = np.sum(np.log(diag[n_deflate:]))
 
-    logdet_algorithm = chebdet.logdet(
+    logdet_algorithm = chebdet.log_det_positive_definite_unit_interval(
         matrix=B,
         n_sample=n_sample,
         n_degree=n_degree,

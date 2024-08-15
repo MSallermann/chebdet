@@ -23,7 +23,7 @@ def test():
 
     logdet = np.sum(np.log(diag))
 
-    logdet_algorithm = chebdet.logdet(matrix=B, n_sample=n_sample, n_degree=n_degree, delta=delta)
+    logdet_algorithm = chebdet.log_det_positive_definite_unit_interval(matrix=B, n_sample=n_sample, n_degree=n_degree, delta=delta)
 
     assert np.isclose(logdet, logdet_algorithm)
 

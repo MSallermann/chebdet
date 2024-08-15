@@ -42,7 +42,7 @@ def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
 
     return c
 
-def logdet(
+def log_det_positive_definite_unit_interval(
     matrix: Union[csr_array, NDArray],
     n_sample: int,
     n_degree: int,
@@ -80,9 +80,8 @@ def logdet(
     I = scipy.sparse.eye(d, d)
 
     scale = 2.0 / (2.0 * delta - 1.0)
-    shift = -scale / 2.0
 
-    A = scale * matrix + shift * I
+    A = scale * (matrix - 0.5 * I)
 
     Gamma = 0.0
 
