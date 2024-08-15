@@ -5,7 +5,7 @@ import scipy.sparse
 from scipy.sparse import coo_array, csr_array, eye
 import numpy as np
 from numpy.typing import NDArray
-import random
+from typing import Optional, List
 
 
 def Rademacher_vec(len):
@@ -46,7 +46,14 @@ def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
     return c
 
 
-def logdet(matrix: csr_array, n_sample: int, n_degree: int, delta: float) -> float:
+def logdet(
+    matrix: csr_array,
+    n_sample: int,
+    n_degree: int,
+    delta: float,
+    eigenvalues_deflate: Optional[List[float]] = None,
+    eigenvectors_deflate: Optional[List[NDArray[np.float64]]] = None,
+) -> float:
     """Computes the log-determinant using the chebyshev approximation
 
     Args:
@@ -54,34 +61,63 @@ def logdet(matrix: csr_array, n_sample: int, n_degree: int, delta: float) -> flo
         n_sample (int): number of random samples
         n_degree (int): polynomial degree of chebyshev approximation
         delta (float): the eigenvalues of matrix have to be in the interval [delta, 1-delta]
+        eigenvalues_deflate (Optional[List[float]]): _description_
+        eigenvectors_deflate (Optional[List[NDArray[np.float64]]]): _description_
+
 
     Returns:
         float: the log determinant
     """
 
+    deflate = not eigenvalues_deflate is None and not eigenvectors_deflate is None
+    if deflate:
+        if len(eigenvalues_deflate) != len(eigenvectors_deflate):
+            raise Exception("Eigenvectors deflate and eigenvlaues deflate need to have the same length")
+
+        # For the deflation use a target that's within the [delta, 1-delta] interval
+        deflate_target = 0.5
+        n_deflate = len(eigenvalues_deflate)
+
     d = matrix.shape[0]
     I = scipy.sparse.eye(d, d)
 
-    A = (2.0 * matrix - I) / (2.0 * delta - 1.0)
+    scale = 2.0 / (2.0 * delta - 1.0)
+    shift = -scale/2.0
+
+    A = scale * matrix + shift * I
 
     Gamma = 0.0
 
     c = chebyshev_coeffs(delta, n_degree)
 
+    def mult_A(lhs : NDArray[np.float64]):
+        res = A@lhs
+
+        if deflate:
+            for eval,evec in zip(eigenvalues_deflate,eigenvectors_deflate):
+                res += scale * (deflate_target - eval) * evec * (evec.T@lhs)[0,0]
+
+        return res
+
     # Calculate Log Determinant via Monte-Carlo Method
     for i in range(n_sample):
-        # print("Iteration: ", i)
         v = Rademacher_vec(d)
         u = c[0] * v
         if n_degree > 1:
             w0 = v
-            w1 = A @ v
+            w1 = mult_A(v)
             u = u + c[1] * w1
             for j in range(2, n_degree + 1):
-                w2 = 2.0 * A @ w1 - w0
+                w2 = 2.0 * mult_A(w1) - w0
                 u = u + c[j] * w2
                 w0 = w1
                 w1 = w2
         Gamma = Gamma + v.T @ u / n_sample
 
-    return Gamma[0, 0]
+    res = Gamma[0,0]
+
+    if deflate:
+        for i in range(n_deflate):
+            res -= np.log(deflate_target)
+
+    return res
