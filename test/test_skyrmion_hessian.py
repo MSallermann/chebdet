@@ -1,8 +1,6 @@
 import numpy as np
-import util
-from chebdet import chebdet, eigenvalues
+from chebdet import chebdet, eigenvalues, util
 import scipy as sp
-import util
 from pathlib import Path
 
 

@@ -1,6 +1,5 @@
 import numpy as np
-import util
-from chebdet import chebdet
+from chebdet import chebdet, util
 import scipy as sp
 
 

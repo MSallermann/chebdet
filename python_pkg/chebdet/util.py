@@ -45,7 +45,7 @@ def read_sparse_matrix(path_to_matrix: Path, n_rows: int, n_cols: int) -> coo_ar
     return matrix
 
 
-def get_logdet(M : csc_array) -> float:
+def get_logdet(M: csc_array) -> float:
     """Computes the log determinant of the sparse matrix M using a sparse LU decomposition"""
     lu = splu(M.tocsc())
     log_det = np.sum(np.log(np.abs(lu.L.diagonal())) + np.log(np.abs(lu.U.diagonal())))

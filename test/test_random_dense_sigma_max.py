@@ -1,8 +1,7 @@
-from chebdet import chebdet
+from chebdet import chebdet, util
 import numpy as np
 import scipy as sp
 from numpy.typing import NDArray
-import util
 
 
 def test():
