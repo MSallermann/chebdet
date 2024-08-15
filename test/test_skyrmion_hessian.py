@@ -25,21 +25,23 @@ def test_sp():
     print(f"{sigma_max = }")
 
     n_sample = 1000
-    n_degree = 40
+    n_degree = 10
 
     logdet_algorithm = chebdet.log_det_positive_definite(
         matrix=hessian,
         n_sample=n_sample,
         n_degree=n_degree,
-        sigma_max=sigma_max,
+        sigma_max=sigma_max[0],
         eigenvalues_deflate=[sigma_min],
         eigenvectors_deflate=[vec_min.reshape((n, 1))],
     )
 
-    logdet_lu = util.get_logdet(hessian) - np.log(np.abs(sigma_min))
+    logdet_lu = util.get_logdet(hessian) - np.log(np.abs(sigma_min[0]))
+    rel_err = np.abs((logdet_algorithm - logdet_lu) / logdet_lu)
 
     print(f"{logdet_lu = }")
     print(f"{logdet_algorithm = }")
+    print(f"{rel_err = :.1e}")
 
     assert np.isclose(logdet_lu, logdet_algorithm, rtol=1e-3)
 
@@ -63,22 +65,22 @@ def test_min():
     print(f"{sigma_max = }")
 
     n_sample = 1000
-    n_degree = 40
+    n_degree = 10
 
     logdet_algorithm = chebdet.log_det_positive_definite(
         matrix=hessian,
         n_sample=n_sample,
         n_degree=n_degree,
-        sigma_max=sigma_max,
+        sigma_max=sigma_max[0],
         eigenvalues_deflate=sigma_min,
         eigenvectors_deflate=[vm.reshape((n, 1)) for vm in vec_min.T],
     )
 
-    print(sum(np.log(sigma_min)))
-
     logdet_lu = util.get_logdet(hessian) - sum(np.log(sigma_min))
+    rel_err = np.abs((logdet_algorithm - logdet_lu) / logdet_lu)
 
     print(f"{logdet_lu = }")
     print(f"{logdet_algorithm = }")
+    print(f"{rel_err = :.1e}")
 
     assert np.isclose(logdet_lu, logdet_algorithm, rtol=1e-3)
