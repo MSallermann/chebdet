@@ -2,6 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import List
 from pathlib import Path
+from scipy.sparse import coo_array, csc_array
 from scipy.sparse.linalg import splu
 
 
@@ -23,7 +24,7 @@ def standard_basis_vector(i: int, n: int) -> NDArray[np.float64]:
 def generate_matrix(spectrum: List[float]) -> NDArray[np.float64]:
     """
     Generates a matrix with a specific spectrum by applying the
-    qr algoirhtm to a random matrix and rotating a diagonal matrix
+    QR algoirthm to a random matrix and rotating a diagonal matrix
     by the resulting basis
     """
     diagonalized = np.diag(spectrum)
@@ -32,8 +33,8 @@ def generate_matrix(spectrum: List[float]) -> NDArray[np.float64]:
     return basis.T @ diagonalized @ basis
 
 
-def read_sparse_matrix(path_to_matrix: Path, n_rows: int, n_cols: int):
-    from scipy.sparse import coo_array
+def read_sparse_matrix(path_to_matrix: Path, n_rows: int, n_cols: int) -> coo_array:
+    """Read a sparse matrix from a file of triplets"""
 
     triplets = np.loadtxt(path_to_matrix)
     rows = np.round(triplets[:, 0], decimals=0)
@@ -44,7 +45,7 @@ def read_sparse_matrix(path_to_matrix: Path, n_rows: int, n_cols: int):
     return matrix
 
 
-def get_logdet(M):
+def get_logdet(M : csc_array) -> float:
     """Computes the log determinant of the sparse matrix M using a sparse LU decomposition"""
     lu = splu(M.tocsc())
     log_det = np.sum(np.log(np.abs(lu.L.diagonal())) + np.log(np.abs(lu.U.diagonal())))
