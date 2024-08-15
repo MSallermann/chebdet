@@ -4,6 +4,7 @@ import scipy as sp
 from numpy.typing import NDArray
 import util
 
+
 def test():
     n = 20
 
@@ -23,9 +24,11 @@ def test():
 
     logdet = np.sum(np.log(diag))
 
-    logdet_algorithm = chebdet.log_det_positive_definite_unit_interval(matrix=B, n_sample=n_sample, n_degree=n_degree, delta=delta)
-
-    assert np.isclose(logdet, logdet_algorithm)
+    logdet_algorithm = chebdet.log_det_positive_definite_unit_interval(
+        matrix=B, n_sample=n_sample, n_degree=n_degree, delta=delta
+    )
 
     print(f"{logdet = }")
     print(f"{logdet_algorithm = }")
+
+    assert np.isclose(logdet, logdet_algorithm)

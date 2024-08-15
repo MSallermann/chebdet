@@ -3,6 +3,7 @@ import util
 from chebdet import chebdet
 import scipy as sp
 
+
 def test():
     n = int(1e4)
 
@@ -37,9 +38,7 @@ def test():
         eigenvectors_deflate=eigenvectors_deflate,
     )
 
-    # assert False
-
-    assert np.isclose(logdet, logdet_algorithm)
-
     print(f"{logdet = }")
     print(f"{logdet_algorithm = }")
+
+    assert np.isclose(logdet, logdet_algorithm)
