@@ -129,13 +129,13 @@ def log_det_positive_definite(
     eigenvalues_deflate: Optional[List[float]] = None,
     eigenvectors_deflate: Optional[List[NDArray[np.float64]]] = None,
 ) -> float:
-    """Computes the log-determinant of a positive definite matrix with eigenvalues smaller than one.
+    """Computes the log-determinant of a positive definite matrix with eigenvalues smaller than sigma_max.
 
     Args:
         matrix (csr_array | NDArray): positive definite determinant
         n_sample (int): number of random samples
         n_degree (int): polynomial degree of chebyshev approximation
-        delta (float): the eigenvalues of matrix have to be in the interval [delta, 1-delta]
+        sigma_max (float): upper bound on the eigenvalues of the matrix
         eigenvalues_deflate (Optional[List[float]]): The list of eigenvalues to remove
         eigenvectors_deflate (Optional[List[NDArray[np.float64]]]): The list of eigenvectors to remove
 
