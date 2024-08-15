@@ -42,7 +42,6 @@ def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
 
     return c
 
-
 def logdet(
     matrix: Union[csr_array, NDArray],
     n_sample: int,
@@ -51,7 +50,7 @@ def logdet(
     eigenvalues_deflate: Optional[List[float]] = None,
     eigenvectors_deflate: Optional[List[NDArray[np.float64]]] = None,
 ) -> float:
-    """Computes the log-determinant using the chebyshev approximation
+    """Computes the log-determinant of a positive definite matrix with eigenvalues smaller than one.
 
     Args:
         matrix (csr_array | NDArray): positive definite determinant
@@ -70,7 +69,7 @@ def logdet(
     if deflate:
         if len(eigenvalues_deflate) != len(eigenvectors_deflate):
             raise Exception(
-                "Eigenvectors deflate and eigenvlaues deflate need to have the same length"
+                "Eigenvectors deflate and eigenvalues deflate need to have the same length"
             )
 
         # For the deflation use a target that's within the [delta, 1-delta] interval
