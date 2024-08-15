@@ -27,7 +27,7 @@ def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
     n = n_degree
 
     k = np.arange(0, n + 1)
-    xk = np.cos(np.pi * (k + 1 / 2) / (n + 1))
+    xk = np.cos(np.pi * (k + 0.5) / (n + 1))
     fxk = np.log(1.0 - ((1.0 - 2.0 * delta) * xk + 1.0) / 2.0)
     # fxk = np.log(1 - xk)
 
@@ -40,7 +40,7 @@ def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
     c[0] = 1.0 / (n + 1) * np.sum(fxk * Txk[0])
     for i in range(1, n):
         Txk[i + 1] = 2.0 * xk * Txk[i] - Txk[i - 1]
-        c[i] = 2 / (n + 1) * np.sum(fxk * Txk[i])
+        c[i] = 2.0 / (n + 1.0) * np.sum(fxk * Txk[i])
     c[n] = 2.0 / (n + 1.0) * np.sum(fxk * Txk[n])
 
     return c
