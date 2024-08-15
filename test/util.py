@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.typing import NDArray
 from typing import List
+from pathlib import Path
+from scipy.sparse.linalg import splu
 
 
 def standard_basis_vector(i: int, n: int) -> NDArray[np.float64]:
@@ -28,3 +30,22 @@ def generate_matrix(spectrum: List[float]) -> NDArray[np.float64]:
     basis = np.random.rand(len(spectrum), len(spectrum))
     basis = np.linalg.qr(basis)[0]
     return basis.T @ diagonalized @ basis
+
+
+def read_sparse_matrix(path_to_matrix: Path, n_rows: int, n_cols: int):
+    from scipy.sparse import coo_array
+
+    triplets = np.loadtxt(path_to_matrix)
+    rows = np.round(triplets[:, 0], decimals=0)
+    cols = np.round(triplets[:, 1], decimals=0)
+    data = triplets[:, 2]
+
+    matrix = coo_array((data, (rows, cols)), shape=(n_rows, n_cols), dtype=np.float64)
+    return matrix
+
+
+def get_logdet(M):
+    """Computes the log determinant of the sparse matrix M using a sparse LU decomposition"""
+    lu = splu(M.tocsc())
+    log_det = np.sum(np.log(np.abs(lu.L.diagonal())) + np.log(np.abs(lu.U.diagonal())))
+    return log_det
