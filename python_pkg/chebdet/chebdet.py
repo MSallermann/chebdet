@@ -42,6 +42,7 @@ def chebyshev_coeffs(delta: float, n_degree: int) -> NDArray[np.float64]:
 
     return c
 
+
 def log_det_positive_definite_unit_interval(
     matrix: Union[csr_array, NDArray],
     n_sample: int,
@@ -118,3 +119,46 @@ def log_det_positive_definite_unit_interval(
             res -= np.log(deflate_target)
 
     return res
+
+
+def log_det_positive_definite(
+    matrix: Union[csr_array, NDArray],
+    n_sample: int,
+    n_degree: int,
+    sigma_max: float,
+    eigenvalues_deflate: Optional[List[float]] = None,
+    eigenvectors_deflate: Optional[List[NDArray[np.float64]]] = None,
+) -> float:
+    """Computes the log-determinant of a positive definite matrix with eigenvalues smaller than one.
+
+    Args:
+        matrix (csr_array | NDArray): positive definite determinant
+        n_sample (int): number of random samples
+        n_degree (int): polynomial degree of chebyshev approximation
+        delta (float): the eigenvalues of matrix have to be in the interval [delta, 1-delta]
+        eigenvalues_deflate (Optional[List[float]]): The list of eigenvalues to remove
+        eigenvectors_deflate (Optional[List[NDArray[np.float64]]]): The list of eigenvectors to remove
+
+
+    Returns:
+        float: the log determinant
+    """
+
+    eigenvalues_deflate_scaled = None
+    n_deflate = 0
+    if not eigenvalues_deflate is None:
+        eigenvalues_deflate_scaled = [ev / sigma_max for ev in eigenvalues_deflate]
+        n_deflate = len(eigenvalues_deflate)
+
+    log_det = log_det_positive_definite_unit_interval(
+        matrix=matrix / sigma_max,
+        n_sample=n_sample,
+        n_degree=n_degree,
+        delta=0.0,
+        eigenvalues_deflate=eigenvalues_deflate_scaled,
+        eigenvectors_deflate=eigenvectors_deflate,
+    )
+
+    d = matrix.shape[0] - n_deflate
+
+    return log_det + d * np.log(sigma_max)
