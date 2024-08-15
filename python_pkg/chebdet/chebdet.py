@@ -5,7 +5,7 @@ from numpy.typing import NDArray
 from typing import Optional, List, Union
 
 
-def Rademacher_vec(len: int) -> NDArray[np.float64]:
+def rademacher_vec(len: int) -> NDArray[np.float64]:
     return 2.0 * np.random.randint(2, size=(len, 1)) - 1.0
 
 
@@ -99,7 +99,7 @@ def logdet(
 
     # Calculate Log Determinant via Monte-Carlo Method
     for i in range(n_sample):
-        v = Rademacher_vec(d)
+        v = rademacher_vec(d)
         u = c[0] * v
         if n_degree > 1:
             w0 = v
