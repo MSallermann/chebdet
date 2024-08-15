@@ -1,0 +1,11 @@
+[project]
+name = "chebdet"
+description = "Determinants with chebyshev sampling"
+version = "0.1.0"
+authors = [
+    { name = "Moritz Sallermann", email = "moritzsallermann@gmail.com" }
+]
+dependencies = [
+    "numpy",
+    "scipy"
+]
