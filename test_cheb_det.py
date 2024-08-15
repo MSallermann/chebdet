@@ -19,7 +19,9 @@ if __name__ == "__main__":
 
     diag = np.linspace(lambda_min, lambda_max, n)
 
+    # B = util.generate_matrix(spectrum=diag)
     B = sp.sparse.diags(diag)
+
     logdet = np.sum(np.log(diag))
 
     Gamma = cheb_det.logdet(matrix=B, n_sample=n_sample, n_degree=n_degree, delta=delta)
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     # define deflation vectors
     eigenvalues_deflate = [-1.0, 0.0]
     n_deflate = len(eigenvalues_deflate)
-    eigenvectors_deflate = [ util.standard_basis_vector(i,n) for i in range(n_deflate) ]
+    eigenvectors_deflate = [util.standard_basis_vector(i, n) for i in range(n_deflate)]
 
     # Test with deflation
     diag = np.linspace(lambda_min, lambda_max, n)
@@ -40,7 +42,14 @@ if __name__ == "__main__":
 
     logdet = np.sum(np.log(diag[n_deflate:]))
 
-    Gamma = cheb_det.logdet(matrix=B, n_sample=n_sample, n_degree=n_degree, delta=delta, eigenvalues_deflate=eigenvalues_deflate, eigenvectors_deflate=eigenvectors_deflate)
+    Gamma = cheb_det.logdet(
+        matrix=B,
+        n_sample=n_sample,
+        n_degree=n_degree,
+        delta=delta,
+        eigenvalues_deflate=eigenvalues_deflate,
+        eigenvectors_deflate=eigenvectors_deflate,
+    )
 
     print("From algorithm: ", Gamma)
     print("Theoretical det: ", logdet)
