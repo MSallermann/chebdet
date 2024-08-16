@@ -31,5 +31,5 @@ def min_parameters(epsilon: float, delta: float, gamma: float = 0.05):
 
 def convert_relative_errors(epsilon_det: float, logdet: float) -> float:
     """Convert a relative error on the determinant to a corresponding relative error on the log determinant"""
-    epsilon_logdet = np.log(1.0 + epsilon_det) / logdet
+    epsilon_logdet = np.log(1.0 + np.abs(epsilon_det)) / np.abs(logdet)
     return epsilon_logdet

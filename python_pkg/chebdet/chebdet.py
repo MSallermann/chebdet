@@ -82,14 +82,12 @@ def log_det_positive_definite_unit_interval(
 
     scale = 2.0 / (2.0 * delta - 1.0)
 
-    A = scale * (matrix - 0.5 * I)
-
     Gamma = 0.0
 
     c = chebyshev_coeffs(delta, n_degree)
 
     def mult_A(lhs: NDArray[np.float64]):
-        res = A @ lhs
+        res = scale * (matrix @ lhs) - 0.5 * scale * lhs
 
         if deflate:
             for eval, evec in zip(eigenvalues_deflate, eigenvectors_deflate):
@@ -125,6 +123,7 @@ def log_det_positive_definite(
     matrix: Union[csr_array, NDArray],
     n_sample: int,
     n_degree: int,
+    sigma_min: float,
     sigma_max: float,
     eigenvalues_deflate: Optional[List[float]] = None,
     eigenvectors_deflate: Optional[List[NDArray[np.float64]]] = None,
@@ -144,21 +143,24 @@ def log_det_positive_definite(
         float: the log determinant
     """
 
+    scale = sigma_min + sigma_max
+    delta = sigma_min / scale
+
     eigenvalues_deflate_scaled = None
     n_deflate = 0
     if not eigenvalues_deflate is None:
-        eigenvalues_deflate_scaled = [ev / sigma_max for ev in eigenvalues_deflate]
+        eigenvalues_deflate_scaled = [ev / scale for ev in eigenvalues_deflate]
         n_deflate = len(eigenvalues_deflate)
 
     log_det = log_det_positive_definite_unit_interval(
-        matrix=matrix / sigma_max,
+        matrix=matrix / scale,
         n_sample=n_sample,
         n_degree=n_degree,
-        delta=0.0,
+        delta=delta,
         eigenvalues_deflate=eigenvalues_deflate_scaled,
         eigenvectors_deflate=eigenvectors_deflate,
     )
 
     d = matrix.shape[0] - n_deflate
 
-    return log_det + d * np.log(sigma_max)
+    return log_det + d * np.log(scale)

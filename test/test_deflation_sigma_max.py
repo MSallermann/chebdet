@@ -31,7 +31,8 @@ def test():
         matrix=B,
         n_sample=n_sample,
         n_degree=n_degree,
-        sigma_max=lambda_max * 1.1,
+        sigma_min=lambda_min,
+        sigma_max=lambda_max,
         eigenvalues_deflate=eigenvalues_deflate,
         eigenvectors_deflate=eigenvectors_deflate,
     )

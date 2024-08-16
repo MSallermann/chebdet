@@ -11,20 +11,23 @@ def test():
 
     lambda_min = 1
     lambda_max = 9
-    # delta = 0.01
 
     n_sample = 120
     n_degree = 80
 
     diag = np.linspace(lambda_min, lambda_max, n)
 
-    # B = util.generate_matrix(spectrum=diag)
-    B = sp.sparse.diags(diag)
+    B = util.generate_matrix(spectrum=diag)
+    # B = sp.sparse.diags(diag)
 
     logdet = np.sum(np.log(diag))
 
     logdet_algorithm = chebdet.log_det_positive_definite(
-        matrix=B, n_sample=n_sample, n_degree=n_degree, sigma_max=lambda_max * 1.1
+        matrix=B,
+        n_sample=n_sample,
+        n_degree=n_degree,
+        sigma_min=0.9 * lambda_min,
+        sigma_max=lambda_max * 1.1,
     )
 
     print(f"{logdet = }")

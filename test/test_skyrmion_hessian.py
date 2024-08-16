@@ -16,11 +16,12 @@ def test_sp():
     sigma_max = sp.sparse.linalg.norm(hessian, ord="fro")
     print(f"estimated sigma_max = {sigma_max}")
 
-    sigma_min, vec_min = eigenvalues.sigma_min(hessian)
+    sigma_min, vec_min = eigenvalues.sigma_min(hessian, k=2)
     sigma_max, vec_max = eigenvalues.sigma_max(hessian)
 
     print(f"{sigma_min = }")
     print(f"{sigma_max = }")
+    print(vec_min.shape)
 
     n_sample = 1000
     n_degree = 10
@@ -29,9 +30,10 @@ def test_sp():
         matrix=hessian,
         n_sample=n_sample,
         n_degree=n_degree,
+        sigma_min=sigma_min[1],  # the first evalue after the sp
         sigma_max=sigma_max[0],
-        eigenvalues_deflate=[sigma_min],
-        eigenvectors_deflate=[vec_min.reshape((n, 1))],
+        eigenvalues_deflate=[sigma_min[0]],
+        eigenvectors_deflate=[vec_min[:, 0].reshape((n, 1))],
     )
 
     logdet_lu = util.get_logdet(hessian) - np.log(np.abs(sigma_min[0]))
@@ -56,7 +58,7 @@ def test_min():
     sigma_max = sp.sparse.linalg.norm(hessian, ord="fro")
     print(f"estimated sigma_max = {sigma_max}")
 
-    sigma_min, vec_min = eigenvalues.sigma_min(hessian, k=2)
+    sigma_min, vec_min = eigenvalues.sigma_min(hessian, k=3)
     sigma_max, vec_max = eigenvalues.sigma_max(hessian)
 
     print(f"{sigma_min = }")
@@ -69,9 +71,10 @@ def test_min():
         matrix=hessian,
         n_sample=n_sample,
         n_degree=n_degree,
+        sigma_min=sigma_min[2],  # after deflation this will be the minimal eigenvalue
         sigma_max=sigma_max[0],
-        eigenvalues_deflate=sigma_min,
-        eigenvectors_deflate=[vm.reshape((n, 1)) for vm in vec_min.T],
+        eigenvalues_deflate=sigma_min[:2],
+        eigenvectors_deflate=[vm.reshape((n, 1)) for vm in (vec_min.T)[:2]],
     )
 
     logdet_lu = util.get_logdet(hessian) - sum(np.log(sigma_min))
