@@ -1,5 +1,5 @@
 import numpy as np
-from chebdet import chebdet, eigenvalues, util
+from chebdet import chebdet, eigenvalues, util, error_bounds
 import scipy as sp
 from pathlib import Path
 
@@ -23,8 +23,11 @@ def test_sp():
     print(f"{sigma_max = }")
     print(vec_min.shape)
 
-    n_sample = 1000
-    n_degree = 10
+    n_degree_min = error_bounds.get_min_degree(5e-2, sigma_min[1], sigma_max[0], 72000)
+    print(f"{n_degree_min = }")
+
+    n_sample = 100
+    n_degree = 46
 
     logdet_algorithm = chebdet.log_det_positive_definite(
         matrix=hessian,
@@ -37,11 +40,13 @@ def test_sp():
     )
 
     logdet_lu = util.get_logdet(hessian) - np.log(np.abs(sigma_min[0]))
-    rel_err = np.abs((logdet_algorithm - logdet_lu) / logdet_lu)
+    abs_log_error = np.abs(logdet_algorithm - logdet_lu)
+    rel_error = np.exp(abs_log_error) - 1
 
     print(f"{logdet_lu = }")
     print(f"{logdet_algorithm = }")
-    print(f"{rel_err = :.1e}")
+    print(f"{abs_log_error = :.1e}")
+    print(f"{rel_error = :.1e}")
 
     assert np.isclose(logdet_lu, logdet_algorithm, rtol=1e-3)
 
@@ -64,8 +69,11 @@ def test_min():
     print(f"{sigma_min = }")
     print(f"{sigma_max = }")
 
+    n_degree_min = error_bounds.get_min_degree(5e-2, sigma_min[2], sigma_max[0], 72000)
+    print(f"{n_degree_min = }")
+
     n_sample = 1000
-    n_degree = 10
+    n_degree = 36
 
     logdet_algorithm = chebdet.log_det_positive_definite(
         matrix=hessian,

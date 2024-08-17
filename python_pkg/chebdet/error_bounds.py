@@ -29,7 +29,19 @@ def min_parameters(epsilon: float, delta: float, gamma: float = 0.05):
     return n_sampling_min, n_degree_min
 
 
-def convert_relative_errors(epsilon_det: float, logdet: float) -> float:
+def convert_relative_errors(rel_error_on_determinant: float, logdet: float) -> float:
     """Convert a relative error on the determinant to a corresponding relative error on the log determinant"""
+    epsilon_det = rel_error_on_determinant
     epsilon_logdet = np.log(1.0 + np.abs(epsilon_det)) / np.abs(logdet)
     return epsilon_logdet
+
+
+def get_min_degree(rel_error_on_determinant, sigma_min, sigma_max, logdet):
+    assert sigma_min > 0
+    assert sigma_max > 0
+
+    rel_log_error = convert_relative_errors(rel_error_on_determinant, logdet)
+    delta = sigma_min / (sigma_min + sigma_max)
+    n_sampling_min, n_degree_min = min_parameters(rel_log_error, delta)
+
+    return n_degree_min

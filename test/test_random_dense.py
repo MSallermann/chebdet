@@ -27,14 +27,15 @@ def test():
     )
 
     # Absolute error on logdet
-    abs_error = np.abs(logdet - logdet_algorithm)
+    abs_log_error = np.abs(logdet - logdet_algorithm)
 
-    # Relative error on det
-    rel_error = np.exp(abs_error) - 1
+    # Relative error on the determinant (not the log)
+    rel_error = np.exp(abs_log_error) - 1.0
 
     print(f"{logdet = }")
     print(f"{logdet_algorithm = }")
-    print(f"{abs_error = }")
-    print(f"{rel_error = }")
+
+    print(f"{abs_log_error = :.1e}")
+    print(f"{rel_error = :.1e}")
 
     assert np.isclose(rel_error, 0.0, atol=5e-2)

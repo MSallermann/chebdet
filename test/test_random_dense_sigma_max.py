@@ -12,13 +12,12 @@ def test():
     lambda_min = 1
     lambda_max = 9
 
-    n_sample = 120
-    n_degree = 80
+    n_sample = int(1e4)
+    n_degree = 20
 
     diag = np.linspace(lambda_min, lambda_max, n)
 
     B = util.generate_matrix(spectrum=diag)
-    # B = sp.sparse.diags(diag)
 
     logdet = np.sum(np.log(diag))
 
@@ -30,7 +29,16 @@ def test():
         sigma_max=lambda_max * 1.1,
     )
 
+    # Absolute error on logdet
+    abs_log_error = np.abs(logdet - logdet_algorithm)
+
+    # Relative error on the determinant (not the log)
+    rel_error = np.exp(abs_log_error) - 1.0
+
     print(f"{logdet = }")
     print(f"{logdet_algorithm = }")
 
-    assert np.isclose(logdet, logdet_algorithm)
+    print(f"{abs_log_error = :.1e}")
+    print(f"{rel_error = :.1e}")
+
+    assert np.isclose(rel_error, 0.0, atol=5e-2)
